@@ -75,12 +75,12 @@ Vagrant.configure("2") do |config|
           SHELL
         end
 
-        config.vm.define "remotecontrol02" do |k8scluster|
+        config.vm.define "remotecontrol01" do |k8scluster|
             k8scluster.vm.box = "bento/centos-7.7" # OK
-            k8scluster.vm.hostname = "remotecontrol02"
+            k8scluster.vm.hostname = "remotecontrol01"
             k8scluster.vm.network "private_network", ip: "192.168.50.13"
             k8scluster.vm.provider "virtualbox" do |vb|
-                vb.name = "remotecontrol02"
+                vb.name = "remotecontrol01"
                 vb.memory = "512"
             end
             k8scluster.vm.provision "ansible_local" do |ansible|
