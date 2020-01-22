@@ -38,6 +38,64 @@ kube-system   kube-proxy-7xbfz                          1/1     Running   0     
 kube-system   kube-proxy-dfgxk                          1/1     Running   0          19m
 kube-system   kube-scheduler-k8s-master01               1/1     Running   0          18m
 ~~~~
+hello-minikube
+~~~~
+vagrant@k8s-master01:~$ kubectl run hello-minikube --image=k8s.gcr.io/echoserver:1.10 --port=8080
+kubectl run --generator=deployment/apps.v1 is DEPRECATED and will be removed in a future version. Use kubectl run --generator=run-pod/v1 or kubectl create instead.
+deployment.apps/hello-minikube created
+vagrant@k8s-master01:~$ kubectl expose deployment hello-minikube --type=NodePort
+service/hello-minikube exposed
+vagrant@k8s-master01:~$ kubectl get pod -n default -o wide  --all-namespaces
+NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE   IP               NODE           NOMINATED NODE   READINESS GATES
+default       hello-minikube-647f9746bc-w25gp            1/1     Running   0          94s   192.168.30.65    worker02       <none>           <none>
+vagrant@k8s-master01:~$ kubectl -n default get services
+NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+hello-minikube   NodePort    10.111.129.166   <none>        8080:31868/TCP   3m21s
+vagrant@k8s-master01:~$ curl http://worker02:31868/
+
+
+Hostname: hello-minikube-647f9746bc-w25gp
+
+Pod Information:
+        -no pod information available-
+
+Server values:
+        server_version=nginx: 1.13.3 - lua: 10008
+
+Request Information:
+        client_address=10.0.2.15
+        method=GET
+        real path=/
+        query=
+        request_version=1.1
+        request_scheme=http
+        request_uri=http://worker02:8080/
+
+Request Headers:
+        accept=*/*
+        host=worker02:31868
+        user-agent=curl/7.47.0
+
+Request Body:
+        -no body in request-
+
+
+~~~~
+Open Source MANO kubernetes deployment
+~~~~
+k8s-master01
+
+git clone https://github.com/egonzalez90/osm-k8s.git && cd osm-k8s/
+kubectl apply -f osm-zookeeper.yaml
+service/osm-zookeeper configured
+error: unable to recognize "osm-zookeeper.yaml": no matches for kind "Deployment" in version "extensions/v1beta1"
+
+####change Deployment and StatefuSet apiVersion to apiVersion: apps/v1
+$ kubectl apply -f osm-zookeeper.yaml
+service/osm-zookeeper configured
+error: error validating "osm-zookeeper.yaml": error validating data: ValidationError(Deployment.spec): missing required field "selector" in io.k8s.api.apps.v1.DeploymentSpec; if you choose to ignore these errors, turn validation off with --validate=false
+
+~~~~
 upgrade
 ~~~~
 vagrant ssh remotecontrol01
@@ -188,7 +246,7 @@ worker02       Ready    <none>   30m   v1.15.2
 ~~~~
 
 ~~~~
-Open Platform for NFV (OPNFV) 
+Open Platform for NFV (OPNFV)
 https://wiki.opnfv.org/display/COM
 
 Open Source MANO kubernetes deployment
